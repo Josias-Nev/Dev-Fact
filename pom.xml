@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>bj.devfact</groupId>
+    <artifactId>dev-fact</artifactId>
+    <version>1.0.0</version>
+    <packaging>war</packaging>
+
+    <name>Dev-Fact</name>
+    <description>Gestion des devis et factures - Jakarta EE 10 / WildFly / PostgreSQL</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.release>17</maven.compiler.release>
+        <jasperreports.version>6.20.6</jasperreports.version>
+    </properties>
+
+    <!--
+        JasperReports 6.20.6 déclare une dépendance vers la variante JasperSoft d'OpenPDF
+        (com.github.librepdf:openpdf:1.3.30.jaspersoft.3). Si votre miroir Maven ne la
+        contient pas, ce dépôt secondaire la fournit ; Maven interroge d'abord le dépôt
+        central, ce bloc est donc sans effet si l'artefact y est déjà présent.
+    -->
+    <repositories>
+        <repository>
+            <id>jaspersoft-third-party</id>
+            <name>Jaspersoft third party artifacts</name>
+            <url>https://jaspersoft.jfrog.io/artifactory/third-party-ce-artifacts/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- API Jakarta EE 10 complète : fournie par WildFly, jamais embarquée dans le WAR -->
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>10.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Implémentation JSTL 3.0 : WildFly n'expose que l'API, l'implémentation est embarquée -->
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+
+        <!-- Génération des PDF -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>${jasperreports.version}</version>
+            <exclusions>
+                <!-- Dépendances inutiles pour un rendu PDF : on allège le WAR -->
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml-lite</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.codehaus.groovy</groupId>
+                    <artifactId>groovy</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mozilla</groupId>
+                    <artifactId>rhino</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.tascalate.javaflow</groupId>
+                    <artifactId>net.tascalate.javaflow.api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.tascalate.javaflow</groupId>
+                    <artifactId>net.tascalate.javaflow.tools.ant</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Pilote JDBC PostgreSQL (embarqué : l'application fonctionne sans module WildFly) -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.4</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>dev-fact</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <warName>dev-fact</warName>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

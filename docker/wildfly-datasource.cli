@@ -1,0 +1,37 @@
+# ============================================================================
+#  Configuration facultative : source de données JNDI dans WildFly
+#
+#  L'application fonctionne SANS ce script (le pilote PostgreSQL est embarqué
+#  dans le WAR et l'URL est lue dans les variables d'environnement).
+#  Ce script est destiné aux déploiements qui préfèrent un pool géré par
+#  WildFly : java:jboss/datasources/DevFactDS
+#
+#  Utilisation (serveur arrêté) :
+#     $JBOSS_HOME/bin/jboss-cli.sh --file=docker/wildfly-datasource.cli
+#  Puis déployer le WAR et redémarrer WildFly.
+# ============================================================================
+embed-server --server-config=standalone.xml --std-out=echo
+
+# 1) Pilote PostgreSQL (téléchargez postgresql-42.7.4.jar au préalable)
+#    L'application reste fonctionnelle si cette étape est ignorée.
+module add --name=org.postgresql \
+  --resources=/tmp/postgresql-42.7.4.jar \
+  --dependencies=java.sql,java.naming,java.transaction.xa
+
+/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql, \
+  driver-module-name=org.postgresql, driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)
+
+# 2) Source de données
+data-source add --name=DevFactDS \
+  --jndi-name=java:jboss/datasources/DevFactDS \
+  --driver-name=postgresql \
+  --connection-url=jdbc:postgresql://localhost:5432/devfact \
+  --user-name=devfact \
+  --password=devfact \
+  --min-pool-size=2 \
+  --max-pool-size=20 \
+  --blocking-timeout-wait-millis=5000 \
+  --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker \
+  --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter
+
+stop-embedded-server

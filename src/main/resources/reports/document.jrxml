@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Dev-Fact - modèle PDF commun aux devis et aux factures.
+  Titre, libellés et montants sont passés en paramètres par ReportService, ce qui permet
+  de maintenir un seul modèle pour les deux types de documents.
+  Ordre imposé par le schéma JasperReports : styles, paramètres, champs, puis bandes.
+-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="document_dev_fact"
+              language="java"
+              pageWidth="595"
+              pageHeight="842"
+              orientation="Portrait"
+              columnCount="1"
+              columnWidth="515"
+              leftMargin="40"
+              rightMargin="40"
+              topMargin="30"
+              bottomMargin="30"
+              whenNoDataType="AllSectionsNoDetail">
+
+    <!-- ================= Styles ================= -->
+    <style name="Base" fontName="SansSerif" fontSize="9" pdfFontName="Helvetica" pdfEncoding="Cp1252"/>
+    <style name="Muted" style="Base" fontSize="8" forecolor="#5B6B7C"/>
+    <style name="Small" style="Base" fontSize="8"/>
+    <style name="SmallItalic" style="Base" fontSize="8" isItalic="true"/>
+    <style name="SmallDark" style="Base" fontSize="8" forecolor="#33475B"/>
+    <style name="ClientTag" style="Base" fontSize="8" isBold="true" forecolor="#1D6F8B"/>
+    <style name="ClientName" style="Base" fontSize="10" isBold="true"/>
+    <style name="Company" style="Base" fontSize="16" isBold="true" forecolor="#123C5A"/>
+    <style name="DocTitle" style="Base" fontSize="24" isBold="true" forecolor="#123C5A" hTextAlign="Right"/>
+    <style name="DocNumber" style="Base" fontSize="11" isBold="true" forecolor="#1D6F8B" hTextAlign="Right"/>
+    <style name="RightMuted" style="Muted" hTextAlign="Right"/>
+    <style name="RightMutedItalic" style="Muted" hTextAlign="Right" isItalic="true"/>
+    <style name="Right" style="Base" hTextAlign="Right"/>
+    <style name="ColumnHeader" style="Base" fontSize="8" isBold="true" forecolor="#FFFFFF"/>
+    <style name="ColumnHeaderRight" style="ColumnHeader" hTextAlign="Right"/>
+    <style name="Cell" style="Base"/>
+    <style name="CellRight" style="Base" hTextAlign="Right"/>
+    <style name="CellTotal" style="Base" hTextAlign="Right" isBold="true"/>
+    <style name="TotalLabel" style="Base" fontSize="11" isBold="true" forecolor="#123C5A"/>
+    <style name="TotalValue" style="Base" fontSize="13" isBold="true" forecolor="#123C5A" hTextAlign="Right"/>
+    <style name="LabelRight" style="Base" fontSize="8" forecolor="#5B6B7C" hTextAlign="Right"/>
+    <style name="AmountWords" style="Base" fontSize="8" isItalic="true" forecolor="#33475B"/>
+    <style name="FooterItalic" style="Muted" isItalic="true"/>
+
+    <!-- ================= Paramètres ================= -->
+    <parameter name="P_COMPANY_NAME" class="java.lang.String"/>
+    <parameter name="P_COMPANY_ADDRESS" class="java.lang.String"/>
+    <parameter name="P_COMPANY_CONTACT" class="java.lang.String"/>
+    <parameter name="P_COMPANY_TAX_ID" class="java.lang.String"/>
+    <parameter name="P_DOC_TITLE" class="java.lang.String"/>
+    <parameter name="P_DOC_NUMBER" class="java.lang.String"/>
+    <parameter name="P_DOC_DATE" class="java.lang.String"/>
+    <parameter name="P_DOC_DUE" class="java.lang.String"/>
+    <parameter name="P_SOURCE" class="java.lang.String"/>
+    <parameter name="P_CLIENT_NAME" class="java.lang.String"/>
+    <parameter name="P_CLIENT_ADDRESS" class="java.lang.String"/>
+    <parameter name="P_CLIENT_CONTACT" class="java.lang.String"/>
+    <parameter name="P_CLIENT_TAX_ID" class="java.lang.String"/>
+    <parameter name="P_SUBJECT" class="java.lang.String"/>
+    <parameter name="P_SUBTOTAL" class="java.lang.String"/>
+    <parameter name="P_TAX_LABEL" class="java.lang.String"/>
+    <parameter name="P_TAX" class="java.lang.String"/>
+    <parameter name="P_TOTAL" class="java.lang.String"/>
+    <parameter name="P_CURRENCY" class="java.lang.String"/>
+    <parameter name="P_AMOUNT_WORDS" class="java.lang.String"/>
+    <parameter name="P_NOTES" class="java.lang.String"/>
+    <parameter name="P_BANK_DETAILS" class="java.lang.String"/>
+    <parameter name="P_FOOTER_NOTE" class="java.lang.String"/>
+
+    <!-- ================= Champs (une ligne de document) ================= -->
+    <field name="designation" class="java.lang.String"/>
+    <field name="quantityText" class="java.lang.String"/>
+    <field name="unitPriceText" class="java.lang.String"/>
+    <field name="totalText" class="java.lang.String"/>
+
+    <background>
+        <band height="1"/>
+    </background>
+
+    <!-- ================= En-tête émetteur / document ================= -->
+    <title>
+        <band height="108">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Company" x="0" y="0" width="300" height="20"/>
+                <textFieldExpression><![CDATA[$P{P_COMPANY_NAME}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Muted" x="0" y="22" width="300" height="11"/>
+                <textFieldExpression><![CDATA[$P{P_COMPANY_ADDRESS}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Muted" x="0" y="34" width="300" height="11"/>
+                <textFieldExpression><![CDATA[$P{P_COMPANY_CONTACT}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Muted" x="0" y="46" width="300" height="11"/>
+                <textFieldExpression><![CDATA[$P{P_COMPANY_TAX_ID}]]></textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement style="DocTitle" x="300" y="0" width="215" height="30"/>
+                <textFieldExpression><![CDATA[$P{P_DOC_TITLE}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement style="DocNumber" x="300" y="32" width="215" height="14"/>
+                <textFieldExpression><![CDATA[$P{P_DOC_NUMBER}]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement style="RightMuted" x="300" y="48" width="215" height="11"/>
+                <textFieldExpression><![CDATA[$P{P_DOC_DATE}]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement style="RightMuted" x="300" y="60" width="215" height="11"/>
+                <textFieldExpression><![CDATA[$P{P_DOC_DUE}]]></textFieldExpression>
+            </textField>
+            <textField isBlankWhenNull="true">
+                <reportElement style="RightMutedItalic" x="300" y="72" width="215" height="11"/>
+                <textFieldExpression><![CDATA[$P{P_SOURCE}]]></textFieldExpression>
+            </textField>
+
+            <line>
+                <reportElement x="0" y="94" width="515" height="1" forecolor="#D8E0E8"/>
+                <graphicElement/>
+            </line>
+        </band>
+    </title>
+
+    <!-- ================= Bloc client ================= -->
+    <pageHeader>
+        <band height="76">
+            <rectangle radius="6">
+                <reportElement mode="Opaque" x="0" y="0" width="515" height="62" backcolor="#F4F7FA" forecolor="#E4EAF1"/>
+                <graphicElement/>
+            </rectangle>
+            <staticText>
+                <reportElement style="ClientTag" x="12" y="7" width="200" height="10"/>
+                <text><![CDATA[CLIENT]]></text>
+            </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="ClientName" x="12" y="19" width="290" height="13"/>
+                <textFieldExpression><![CDATA[$P{P_CLIENT_NAME}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Small" x="12" y="33" width="290" height="11"/>
+                <textFieldExpression><![CDATA[$P{P_CLIENT_ADDRESS}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Small" x="12" y="44" width="290" height="11"/>
+                <textFieldExpression><![CDATA[$P{P_CLIENT_CONTACT}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Small" x="12" y="55" width="290" height="11"/>
+                <textFieldExpression><![CDATA[$P{P_CLIENT_TAX_ID}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+
+    <!-- ================= Objet et en-tête de tableau ================= -->
+    <columnHeader>
+        <band height="46">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="SmallItalic" x="0" y="6" width="515" height="12"/>
+                <textFieldExpression><![CDATA[$P{P_SUBJECT}]]></textFieldExpression>
+            </textField>
+            <rectangle>
+                <reportElement mode="Opaque" x="0" y="24" width="515" height="22" backcolor="#123C5A"/>
+                <graphicElement/>
+            </rectangle>
+            <staticText>
+                <reportElement style="ColumnHeader" x="8" y="30" width="280" height="12"/>
+                <text><![CDATA[DÉSIGNATION]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="ColumnHeaderRight" x="288" y="30" width="45" height="12"/>
+                <text><![CDATA[QTÉ]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="ColumnHeaderRight" x="333" y="30" width="80" height="12"/>
+                <text><![CDATA[P.U.]]></text>
+            </staticText>
+            <textField>
+                <reportElement style="ColumnHeaderRight" x="413" y="30" width="94" height="12"/>
+                <textFieldExpression><![CDATA["MONTANT (" + $P{P_CURRENCY} + ")"]]></textFieldExpression>
+            </textField>
+        </band>
+    </columnHeader>
+
+    <!-- ================= Lignes ================= -->
+    <detail>
+        <band height="19">
+            <textField textAdjust="StretchHeight">
+                <reportElement style="Cell" x="8" y="3" width="280" height="13"/>
+                <textFieldExpression><![CDATA[$F{designation}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement style="CellRight" x="288" y="3" width="45" height="13"/>
+                <textFieldExpression><![CDATA[$F{quantityText}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement style="CellRight" x="333" y="3" width="80" height="13"/>
+                <textFieldExpression><![CDATA[$F{unitPriceText}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement style="CellTotal" x="413" y="3" width="94" height="13"/>
+                <textFieldExpression><![CDATA[$F{totalText}]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="0" y="17" width="515" height="1" forecolor="#E4EAF1"/>
+                <graphicElement/>
+            </line>
+        </band>
+    </detail>
+
+    <!-- ================= Pied de page ================= -->
+    <pageFooter>
+        <band height="26">
+            <line>
+                <reportElement x="0" y="0" width="515" height="1" forecolor="#E4EAF1"/>
+                <graphicElement/>
+            </line>
+            <textField>
+                <reportElement style="Muted" x="0" y="6" width="380" height="12"/>
+                <textFieldExpression><![CDATA[$P{P_COMPANY_NAME} + " - " + $P{P_DOC_TITLE} + " " + $P{P_DOC_NUMBER}]]></textFieldExpression>
+            </textField>
+            <textField evaluationTime="Page">
+                <reportElement style="RightMuted" x="380" y="6" width="100" height="12"/>
+                <textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER} + " / "]]></textFieldExpression>
+            </textField>
+            <textField evaluationTime="Report">
+                <reportElement style="RightMuted" x="480" y="6" width="35" height="12"/>
+                <textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+    <!-- ================= Totaux et mentions ================= -->
+    <summary>
+        <band height="230">
+            <line>
+                <reportElement x="0" y="0" width="515" height="1" forecolor="#D8E0E8"/>
+                <graphicElement/>
+            </line>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement style="AmountWords" x="0" y="10" width="300" height="34"/>
+                <textFieldExpression><![CDATA[$P{P_AMOUNT_WORDS}]]></textFieldExpression>
+            </textField>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement style="SmallDark" x="0" y="52" width="300" height="46"/>
+                <textFieldExpression><![CDATA[$P{P_NOTES}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement style="LabelRight" x="320" y="10" width="110" height="12"/>
+                <text><![CDATA[Sous-total HT]]></text>
+            </staticText>
+            <textField>
+                <reportElement style="Right" x="435" y="10" width="80" height="12"/>
+                <textFieldExpression><![CDATA[$P{P_SUBTOTAL}]]></textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement style="LabelRight" x="300" y="26" width="130" height="12"/>
+                <textFieldExpression><![CDATA[$P{P_TAX_LABEL}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement style="Right" x="435" y="26" width="80" height="12"/>
+                <textFieldExpression><![CDATA[$P{P_TAX}]]></textFieldExpression>
+            </textField>
+
+            <line>
+                <reportElement x="320" y="42" width="195" height="1" forecolor="#D8E0E8"/>
+                <graphicElement/>
+            </line>
+
+            <rectangle radius="4">
+                <reportElement mode="Opaque" x="306" y="48" width="209" height="26" backcolor="#EAF2F7"/>
+                <graphicElement/>
+            </rectangle>
+            <staticText>
+                <reportElement style="TotalLabel" x="316" y="55" width="120" height="14"/>
+                <text><![CDATA[TOTAL TTC]]></text>
+            </staticText>
+            <textField>
+                <reportElement style="TotalValue" x="416" y="52" width="92" height="20"/>
+                <textFieldExpression><![CDATA[$P{P_TOTAL}]]></textFieldExpression>
+            </textField>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement style="SmallDark" x="0" y="108" width="515" height="30"/>
+                <textFieldExpression><![CDATA[$P{P_BANK_DETAILS}]]></textFieldExpression>
+            </textField>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement style="FooterItalic" x="0" y="142" width="515" height="24"/>
+                <textFieldExpression><![CDATA[$P{P_FOOTER_NOTE}]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+
+</jasperReport>
