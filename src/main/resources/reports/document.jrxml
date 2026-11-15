@@ -227,12 +227,8 @@
                 <textFieldExpression><![CDATA[$P{P_COMPANY_NAME} + " - " + $P{P_DOC_TITLE} + " " + $P{P_DOC_NUMBER}]]></textFieldExpression>
             </textField>
             <textField evaluationTime="Page">
-                <reportElement style="RightMuted" x="380" y="6" width="100" height="12"/>
-                <textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER} + " / "]]></textFieldExpression>
-            </textField>
-            <textField evaluationTime="Report">
-                <reportElement style="RightMuted" x="480" y="6" width="35" height="12"/>
-                <textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+                <reportElement style="RightMuted" x="380" y="6" width="135" height="12"/>
+                <textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
             </textField>
         </band>
     </pageFooter>
