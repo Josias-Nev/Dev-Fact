@@ -1,0 +1,50 @@
+# ============================================================================
+#  Dev-Fact — pile complète : PostgreSQL 16 + WildFly 35 (application déployée)
+#  Démarrage : docker compose up --build
+#  Accès     : http://localhost:8080/dev-fact/   (admin / Admin@2026)
+# ============================================================================
+name: dev-fact
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: devfact-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: devfact
+      POSTGRES_USER: devfact
+      POSTGRES_PASSWORD: ${DEV_FACT_DB_PASSWORD:-devfact}
+      TZ: Africa/Porto-Novo
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Schéma + données initiales exécutés au premier démarrage
+      - ./database:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devfact -d devfact"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: devfact-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DEV_FACT_DB_URL: jdbc:postgresql://db:5432/devfact
+      DEV_FACT_DB_USER: devfact
+      DEV_FACT_DB_PASSWORD: ${DEV_FACT_DB_PASSWORD:-devfact}
+      TZ: Africa/Porto-Novo
+    ports:
+      - "8080:8080"
+      - "9990:9990"
+
+volumes:
+  db-data:
+    name: devfact-db-data

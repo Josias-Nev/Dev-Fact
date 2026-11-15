@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  WildFly : JasperReports a besoin d'AWT/ImageIO (java.desktop) pour produire les PDF.
+  Ce module JDK n'est pas visible par défaut depuis un déploiement web.
+-->
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.3">
+    <deployment>
+        <dependencies>
+            <module name="java.desktop"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>
